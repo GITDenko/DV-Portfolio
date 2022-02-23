@@ -2,9 +2,9 @@ import React from "react";
 import '../products/Products.css';
 import GetRequest from "../components/httprequests/GetRequest";
 import { Link, useLocation } from "react-router-dom";
+import Products from "../products/Products";
 
 const Subcategory = () => {
-  
   const maincategory = useLocation().state.selectedMainCategory;
   const url = "/api/maincategory/" + maincategory.id + "/subcategory";
 
@@ -28,7 +28,6 @@ const Subcategory = () => {
             </Link>
           ))
         } catch(e){}
-
       })()}
     </>
   );

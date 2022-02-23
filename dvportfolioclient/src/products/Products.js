@@ -7,15 +7,20 @@ import { Link, useLocation } from "react-router-dom";
 
 const Products = () => {
   
-  const maincategory = useLocation().state.selectedMainCategory; /// Behövsn og inte
+  //const maincategory = useLocation().state.selectedMainCategory; /// Behövsn og inte
   // url behöver hämtas och göras om för alla olika bitarna (photo, video, website)
   const subcategory = useLocation().state.selectedSubcategory;
+  const url = useLocation().state.selectedUrl;
   
+  const photoURL = (url + "/" + subcategory.id + "/photos")
+  const videosURL = (url + "/" + subcategory.id + "/videos")
+  const websitesURL = (url + "/" + subcategory.id + "/websites")
+
   return (
     <>
-        <Photo/>
-        <Video/>
-        <Website/>
+        <Photo url={photoURL} />
+        <Video url={videosURL}/>
+        <Website url={websitesURL}/>
     </>
   );
 }

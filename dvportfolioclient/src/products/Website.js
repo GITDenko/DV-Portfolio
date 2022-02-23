@@ -1,11 +1,23 @@
 import React from "react";
 import './Products.css';
+import GetRequest from "../components/httprequests/GetRequest";
 
-const Website = () => {
+const Website = (props) => {
+
+  const websites = GetRequest(props.url);
+
   return (
-      <a className="Website" href="www.nfacademy.se">
-          <h2 className="PhotoText">NF Academy</h2>
-      </a>
+      <>
+        {(() => {
+          try {
+            return websites.map((website, i) => (
+                <div className="Product" key={i}>
+                  <h2 className="ProductText">{website.productUrl}</h2>
+                </div>
+            ))
+          } catch(e){}
+        })()}
+      </>
   );
 }
 
