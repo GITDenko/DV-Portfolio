@@ -1,0 +1,17 @@
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\bin\Debug\net5.0\Contracts.dll
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\LoggerService.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\LoggerService.AssemblyInfoInputs.cache
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\LoggerService.AssemblyInfo.cs
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\bin\Debug\net5.0\LoggerService.deps.json
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\bin\Debug\net5.0\LoggerService.dll
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\bin\Debug\net5.0\ref\LoggerService.dll
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\bin\Debug\net5.0\LoggerService.pdb
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\bin\Debug\net5.0\Contracts.pdb
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\LoggerService.csproj.CoreCompileInputs.cache
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\LoggerService.csproj.CopyComplete
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\LoggerService.dll
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\ref\LoggerService.dll
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\LoggerService.pdb
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\obj\Debug\net5.0\LoggerService.csproj.AssemblyReference.cache
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\bin\Debug\net5.0\Entities.dll
+C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\LoggerService\bin\Debug\net5.0\Entities.pdb
