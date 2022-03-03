@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,8 @@ namespace Entities
         public string Name { get; set; }
         [Required(ErrorMessage = "Image URL is a required field.")]
         public string ImageURL { get; set; }
+        [NotMapped]
+        public IFormFile ImageFile { get; set; }
         [Required(ErrorMessage = "Hidden is a required field.")]
         public bool Hidden { get; set; }
         public List<Photo> Photos { get; set; }

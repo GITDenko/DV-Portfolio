@@ -3,9 +3,12 @@ using Contracts;
 using Entities;
 using Entities.DataTransferObjects;
 using LoggerService;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,12 +21,14 @@ namespace DVPortfolio.Controllers
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public MainCategoriesController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper)
+        public MainCategoriesController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IWebHostEnvironment hostEnvironment)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _hostEnvironment = hostEnvironment;
         }
 
         [HttpGet]
@@ -52,7 +57,7 @@ namespace DVPortfolio.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateMainCategory([FromBody]MainCategoryForCreationDto mainCategory)
+        public IActionResult CreateMainCategory([FromForm]MainCategory mainCategory)
         {
             if(mainCategory == null)
             {
@@ -60,16 +65,19 @@ namespace DVPortfolio.Controllers
                 return BadRequest("CompanyForCreationDto object is null");
             }
 
+            mainCategory.ImageURL = SaveImage(mainCategory.ImageFile); //55:51
             var mainCategoryEntity = _mapper.Map<MainCategory>(mainCategory);
+
 
             _repository.MainCategory.CreateMainCategory(mainCategoryEntity);
             _repository.Save();
 
-            var mainCategoryToReturn = _mapper.Map<MainCategoryDto>(mainCategoryEntity);
+            //var mainCategoryToReturn = _mapper.Map<MainCategoryDto>(mainCategoryEntity);
 
             mainCategory.Hidden = false;
 
-            return CreatedAtRoute("MainCategoryById", new { id = mainCategoryToReturn.Id }, mainCategoryToReturn);
+            return StatusCode(201);
+            //return CreatedAtRoute("MainCategoryById", new { id = mainCategoryToReturn.Id }, mainCategoryToReturn);
         }
     
     
@@ -89,5 +97,18 @@ namespace DVPortfolio.Controllers
             return NoContent();
         }
 
+        [NonAction]
+        public string SaveImage(IFormFile imageFile)
+        {
+            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                //await imageFile.CopyToAsync(fileStream); 55:17
+                imageFile.CopyTo(fileStream);
+            }
+            return imageName;
+        }
     }
 }
