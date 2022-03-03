@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../index.css";
 
+
+//57:46 JAG TROR INTE JAG BEHÖVER CORS.
 const defaultImageSrc = '/img/missingimage.png'
 const initialFieldValues = {
   name: '', //imageName
@@ -11,6 +13,11 @@ const initialFieldValues = {
 
 const Admin = () => {
   const url = '/api/maincategory'
+
+  //Use effect på maincategory, sub, photo, video etc.
+  useEffect(() =>{
+    refreshMainCategoryList();
+  }, [])
 
   const [values, setValues] = useState(initialFieldValues)
   const [errors, setErrors] = useState({})
@@ -69,6 +76,8 @@ const Admin = () => {
   const applyErrorClass = field => ((field in errors && errors[field]==false)?' invalid-field': '')
 
 
+  const [maincategorList, setMaincategorylist] = useState([])
+
   const maincategoryAPI = ( url = '/api/maincategory') => {
     return {
       fetchAll: () => axios.get(url),
@@ -78,10 +87,18 @@ const Admin = () => {
     }
   }
 
+  function refreshMainCategoryList() {
+    maincategoryAPI().fetchAll()
+    .then(res => setMaincategorylist(res.data))
+    .catch(err => console.log(err))
+  }
+
+
   const addOrEdit = (formData, onSuccess) => {
     maincategoryAPI().create(formData)
     .then(res => {
       onSuccess();
+      refreshMainCategoryList();
     })
     .catch(err => console.log(err))
   }
@@ -91,6 +108,15 @@ const Admin = () => {
     document.getElementById('image-uploader').value = null;
     setErrors({});
   }
+
+  const imageCard = data =>(
+    <div className="card">
+      <img src={"https://localhost:44388/Images/" + data.imageUrl} className="card-img-top rounded-circle"/>
+      <div className="card-body">
+        <h5>{data.name}</h5>
+      </div>
+    </div>
+  )
 
   return (
     <div className="container">
@@ -127,7 +153,19 @@ const Admin = () => {
         
         {/* LIST OF MAINCATEGORIES */}
         <div className="col-md-8">
-          List of Maincategories
+          <table>
+            <tbody>
+              {
+                [...Array(Math.ceil(maincategorList.length/3))].map((e,i) =>
+                  <tr>
+                    <td>{maincategorList[3*i]?imageCard(maincategorList[3*i]): null}</td>
+                    <td>{maincategorList[3*i+1]?imageCard(maincategorList[3*i+1]): null}</td>
+                    <td>{maincategorList[3*i+2]?imageCard(maincategorList[3*i+2]): null}</td>
+                  </tr>
+                )
+              }
+            </tbody>
+          </table>
         </div>
 
     </div>
