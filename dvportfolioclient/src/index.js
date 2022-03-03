@@ -7,6 +7,7 @@ import MainCategory from './categories/MainCategory';
 import Subcategory from './categories/Subcategory';
 import Products from './products/Products';
 import Admin from './admin/Admin';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
   <React.StrictMode>
