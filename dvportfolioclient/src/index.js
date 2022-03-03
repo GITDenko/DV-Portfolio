@@ -6,6 +6,7 @@ import Header from './components/Header';
 import MainCategory from './categories/MainCategory';
 import Subcategory from './categories/Subcategory';
 import Products from './products/Products';
+import Admin from './admin/Admin';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -16,6 +17,7 @@ ReactDOM.render(
           <Route exact path="/*" element={<MainCategory />} />
           <Route exact path="/subcategory" element={<Subcategory />} />
           <Route exact path="/products" element={<Products />} />
+          <Route exact path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
