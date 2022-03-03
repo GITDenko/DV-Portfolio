@@ -4,13 +4,11 @@ import axios from "axios";
 const Admin = () => {
   const url = '/api/maincategory'
 
-  const [data, setData] = useState(
-      {name: '', imageUrl: ''}
-    );
+  const defaultImageSrc = '/img/missingimage.png'
 
-  const handleChangeFilename = (event) => {
-    setData({...data, imageUrl: event.target.value})
-  }
+  const [data, setData] = useState(
+      {name: '', imageUrl: defaultImageSrc}
+    );
 
   const handleChangeName = (e) => {
     setData({...data, name: e.target.value})
@@ -22,23 +20,50 @@ const Admin = () => {
     .then(function (response) {console.log(response);})
     .catch(function (error) {console.log(error);});
   }
+  
+  const showPreview = e =>{
+    if(e.target.files && e.target.files[0]){
+      let imageFile = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = x =>{
+        setData({
+          ...data,
+          imageFile,
+          imageUrl: x.target.result
+        })
+      }
+      reader.readAsDataURL(imageFile)
+    }
+    //Kanske inte behöver denna
+    else{
+      setData({
+        ...data,
+        imageFile: null,
+        imageUrl: defaultImageSrc
+      })
+    }
+  }
 
   return (
     <>
      {/* En metod för att lägga till MainCategory */}
-     Create a Main Category
+     <h2>Create a Main Category</h2>
+     <img src={data.imageUrl}/>
      <form onSubmit={handleSubmit}>
-      Name on main category:
+      
+      <p>Name on main category:</p>
       <input type='text' name="Name" value={data.name} onChange={(e) => handleChangeName(e)} required/>
-      Filename:
-      <input type='text' onChange={(e) => handleChangeFilename(e)} value={data.imageUrl} required/>
+      
+      <p>Filename:</p>
+      <input type='file' accept="image/" onChange={showPreview}/>
+
       <button type='submit'> Create </button>
      </form>
 
-     {/* En metod för att lägga till Subcategory */}
-     {/* En metod för att lägga till Photo */}
-     {/* En metod för att lägga till Video */}
-     {/* En metod för att lägga till Website */}
+      {/* LIST OF MAINCATEGORIES */}
+      <div>
+        
+      </div>
     </>
   );
 }
