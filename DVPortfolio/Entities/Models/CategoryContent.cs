@@ -18,6 +18,9 @@ namespace Entities
         public string ImageURL { get; set; }
         [NotMapped]
         public IFormFile ImageFile { get; set; }
+        [NotMapped]
+        public string ImageSrc { get; set; }
+
         [Required(ErrorMessage = "Hidden is a required field.")]
         public bool Hidden { get; set; }
         public List<Photo> Photos { get; set; }

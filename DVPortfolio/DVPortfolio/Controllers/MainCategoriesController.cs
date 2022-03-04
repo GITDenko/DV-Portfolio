@@ -34,10 +34,23 @@ namespace DVPortfolio.Controllers
         [HttpGet]
         public IActionResult GetMainCategories()
         {
-            var maincategories = _repository.MainCategory.GetAllMainCategories(trackChanges: false);
-            var categoriesDto = _mapper.Map < IEnumerable <MainCategoryDto>>(maincategories);
+            var maincategories = _repository.MainCategory.GetAllMainCategories(trackChanges: false)
+                .Select(x => new MainCategory() { 
+                Id = x.Id,
+                Name = x.Name,
+                Hidden = x.Hidden,
+                Subcategories = x.Subcategories,
+                Photos = x.Photos,
+                Videos = x.Videos,
+                Websites = x.Websites,
+                ImageURL = x.ImageURL,
+                ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageURL)
+                });
+                //.ToList();
+            //var categoriesDto = _mapper.Map < IEnumerable <MainCategoryDto>>(maincategories);
+            //^Kanske flyttar tbx på den här
 
-            return Ok(categoriesDto);
+            return Ok(maincategories);
         }
 
         [HttpGet("{id}", Name = "MainCategoryById")]

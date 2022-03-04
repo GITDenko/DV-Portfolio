@@ -2,25 +2,29 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../index.css";
 
-
-//57:46 JAG TROR INTE JAG BEHÖVER CORS.
 const defaultImageSrc = '/img/missingimage.png'
 const initialFieldValues = {
-  name: '', //imageName
-  imageUrl: defaultImageSrc, //imageSrc
+  name: '', //Main Cateogry Name
+  imageUrl: '', //imageName
+  imageSrc: defaultImageSrc,
   imageFile: null //imageFile
 }
 
 const Admin = () => {
   const url = '/api/maincategory'
-
-  //Use effect på maincategory, sub, photo, video etc.
-  useEffect(() =>{
-    refreshMainCategoryList();
-  }, [])
-
   const [values, setValues] = useState(initialFieldValues)
   const [errors, setErrors] = useState({})
+  const [recordForEdit, setRecordForEdit] = useState(null) /// Pass recordforEdit to child och AddorEdit
+  const [maincategoryList, setMaincategorylist] = useState([])
+
+
+    //Use effect på maincategory, sub, photo, video etc.
+    useEffect(() =>{
+      if(recordForEdit != null)
+        setValues(recordForEdit);
+        refreshMainCategoryList();
+      }, [recordForEdit])
+
 
   const handleInputChange = e => {
     const {name, value} = e.target;
@@ -37,8 +41,8 @@ const Admin = () => {
       reader.onload = x => {
         setValues({
           ...values,
-          imageFile,
-          imageUrl: x.target.result
+          imageFile: null,
+          imageSrc: x.target.result
         })
       }
       reader.readAsDataURL(imageFile)
@@ -47,7 +51,7 @@ const Admin = () => {
       setValues({
         ...values,
         imageFile: null,
-        imageUrl: '/img/missingimage.png'
+        imageSrc: defaultImageSrc
       })
     }
   }
@@ -55,7 +59,7 @@ const Admin = () => {
   const validate = () => {
     let temp = {}
     temp.name = values.name==""?false:true;
-    temp.imageUrl = values.imageUrl==defaultImageSrc?false:true;
+    temp.imageSrc = values.imageSrc==defaultImageSrc?false:true;
     setErrors(temp)
     return Object.values(temp).every(x => x==true)
   }
@@ -67,7 +71,7 @@ const Admin = () => {
       //formData.append('id', values.id) //Behövs nog ej
       formData.append('name', values.name)
       //formData.append('hidden', values.hidden) // Behövs nog ej
-      formData.append('imageUrl', values.imageUrl)
+      formData.append('imageUrl', values.imageUrl) //ImageName
       formData.append('imageFile', values.imageFile)
       addOrEdit(formData, resetForm)
     }
@@ -75,9 +79,7 @@ const Admin = () => {
 
   const applyErrorClass = field => ((field in errors && errors[field]==false)?' invalid-field': '')
 
-
-  const [maincategorList, setMaincategorylist] = useState([])
-
+  //: API FUNCTIONS
   const maincategoryAPI = ( url = '/api/maincategory') => {
     return {
       fetchAll: () => axios.get(url),
@@ -87,13 +89,14 @@ const Admin = () => {
     }
   }
 
+  //: REFRESH and GET ALL MAIN CATEGORIES
   function refreshMainCategoryList() {
     maincategoryAPI().fetchAll()
     .then(res => setMaincategorylist(res.data))
     .catch(err => console.log(err))
   }
 
-
+  //: CREATE OR UPDATE
   const addOrEdit = (formData, onSuccess) => {
     maincategoryAPI().create(formData)
     .then(res => {
@@ -103,21 +106,27 @@ const Admin = () => {
     .catch(err => console.log(err))
   }
 
+
   const resetForm = () =>{
     setValues(initialFieldValues)
     document.getElementById('image-uploader').value = null;
     setErrors({});
   }
 
+  const showRecordDetails = data => {
+    setRecordForEdit(data);
+  }
+
   const imageCard = data =>(
-    <div className="card">
-      <img src={"https://localhost:44388/Images/" + data.imageUrl} className="card-img-top rounded-circle"/>
+    <div className="card" onClick={() =>{showRecordDetails(data)}} >
       <div className="card-body">
-        <h5>{data.name}</h5>
+        <img src={data.imageSrc} className="card-img-top rounded-circle"/>
+        <div className="card-body">
+          <h5>{data.name}</h5>
+        </div>
       </div>
     </div>
   )
-
   return (
     <div className="container">
      {/* En metod för att lägga till MainCategory */}
@@ -132,10 +141,10 @@ const Admin = () => {
           </div>
           <form autoComplete="off" noValidate onSubmit={handleFormSubmit}>
             <div className="card">
-              <img src={values.imageUrl}/>
+              <img src={values.imageSrc}/>
               <div className="card-body">
                 <div className="form-group">
-                  <input type="file" accept="image/*" className={"form-control-file"+applyErrorClass('imageUrl')} 
+                  <input type="file" accept="image/*" className={"form-control-file"+applyErrorClass('imageSrc')} 
                   onChange={showPreview} id="image-uploader"/>
                 </div>
                 <div className="form-group">
@@ -156,11 +165,11 @@ const Admin = () => {
           <table>
             <tbody>
               {
-                [...Array(Math.ceil(maincategorList.length/3))].map((e,i) =>
-                  <tr>
-                    <td>{maincategorList[3*i]?imageCard(maincategorList[3*i]): null}</td>
-                    <td>{maincategorList[3*i+1]?imageCard(maincategorList[3*i+1]): null}</td>
-                    <td>{maincategorList[3*i+2]?imageCard(maincategorList[3*i+2]): null}</td>
+                [...Array(Math.ceil(maincategoryList.length/3))].map((e,i) =>
+                  <tr key={i}>
+                    <td>{maincategoryList[3*i]?imageCard(maincategoryList[3*i]): null}</td>
+                    <td>{maincategoryList[3*i+1]?imageCard(maincategoryList[3*i+1]): null}</td>
+                    <td>{maincategoryList[3*i+2]?imageCard(maincategoryList[3*i+2]): null}</td>
                   </tr>
                 )
               }
