@@ -21,6 +21,7 @@ const AdminSubcategory = () => {
   const [maincategoryList, setMaincategorylist] = useState([])
   const [subcategoryList, setSubcategorylist] = useState([])
 
+  console.log(values.maincategoryId)
 
   //Use effect på maincategory, sub, photo, video etc.
   useEffect(() =>{
@@ -95,13 +96,9 @@ const AdminSubcategory = () => {
   const applyErrorClass = field => ((field in errors && errors[field]==false)?' invalid-field': '')
 
   //: API FUNCTIONS
-  const subcategoryAPI = ( url = '/api/maincategory/') => {
+  const subcategoryAPI = ( url = '/api/maincategory/' + values.maincategoryId + "/subcategory/") => {
     //maincategoryList.id
     // CONST: Få ett ID att posta och delete:a ifrån in i URL.
-    const id = 1;
-    url += id + "/subcategory/";
-
-
 
     return {
       fetchAll: () => axios.get(url),
@@ -110,8 +107,6 @@ const AdminSubcategory = () => {
       delete: id => axios.delete(url + id)
     }
   }
-
-
 
   //: REFRESH and GET ALL SUBCATEGORIES
   function refreshSubcategoryList() {
@@ -157,6 +152,11 @@ const AdminSubcategory = () => {
     .catch(err => console.log(err))
   }
 
+  const updateMainCategory = e => {
+    refreshSubcategoryList();
+    handleInputChange(e);
+  }
+
   /// Export?
   const imageCard = data =>(
     <div className="card" onClick={() =>{showRecordDetails(data)}} >
@@ -197,7 +197,10 @@ const AdminSubcategory = () => {
                   onChange = {handleInputChange} />
                 </div>
                 <div className="form-group">
-                  <select>
+                  <select 
+                  name="maincategoryId"
+                  value={values.maincategoryId}
+                  onChange={updateMainCategory}>
                     {maincategoryList.map(maincategory => (
                       <option value={maincategory.id}>{maincategory.name}</option>
                     )
