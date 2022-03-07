@@ -12,6 +12,16 @@ const initialFieldValues = {
   imageFile: null //imageFile
 }
 
+//: API FUNCTIONS
+export const maincategoryAPI = ( url = '/api/maincategory/') => {
+  return {
+    fetchAll: () => axios.get(url),
+    create: newRecord => axios.post(url, newRecord),
+    update: (id, updateRecord) => axios.put(url, updateRecord),
+    delete: id => axios.delete(url + id)
+  }
+}
+
 const AdminMainCateogry = () => {
   const [values, setValues] = useState(initialFieldValues)
   const [errors, setErrors] = useState({})
@@ -79,16 +89,6 @@ const AdminMainCateogry = () => {
   }
 
   const applyErrorClass = field => ((field in errors && errors[field]==false)?' invalid-field': '')
-
-  //: API FUNCTIONS
-  const maincategoryAPI = ( url = '/api/maincategory/') => {
-    return {
-      fetchAll: () => axios.get(url),
-      create: newRecord => axios.post(url, newRecord),
-      update: (id, updateRecord) => axios.put(url, updateRecord),
-      delete: id => axios.delete(url + id)
-    }
-  }
 
   //: REFRESH and GET ALL MAIN CATEGORIES
   function refreshMainCategoryList() {

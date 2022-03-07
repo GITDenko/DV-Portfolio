@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../index.css";
 import { BsFillTrashFill } from "react-icons/bs";
+import { maincategoryAPI } from "./AdminMainCateogry";
 
 const defaultImageSrc = '/img/missingimage.png'
 const initialFieldValues = {
@@ -26,8 +27,15 @@ const AdminSubcategory = () => {
     if(recordForEdit != null)
       setValues(recordForEdit);
       refreshSubcategoryList();
+      fetchMaincategoryList();
     }, [recordForEdit])
 
+  // Get all Maincategories
+  const fetchMaincategoryList = () => {
+    maincategoryAPI().fetchAll()
+      .then(res => setMaincategorylist(res.data))
+      .catch(err => console.log(err));
+  }
 
   ///Export?
   const handleInputChange = e => {
@@ -88,20 +96,12 @@ const AdminSubcategory = () => {
 
   //: API FUNCTIONS
   const subcategoryAPI = ( url = '/api/maincategory/') => {
-    
-    // CONST: Hämta alla subkategorier från alla maincategories
-    // Get all Main Categories
-    // subcategoryAPI().fetchAll()
-    // .then(res => setMaincategorylist(res.data))
-    // .catch(err => console.log(err))
-    // maincategoryList.forEach(element => {
-    //   console.log(element.id)
-    // });
-
-
     //maincategoryList.id
     // CONST: Få ett ID att posta och delete:a ifrån in i URL.
-    const subUrl = url + "x/subcategory/";
+    const id = 1;
+    url += id + "/subcategory/";
+
+
 
     return {
       fetchAll: () => axios.get(url),
@@ -110,6 +110,8 @@ const AdminSubcategory = () => {
       delete: id => axios.delete(url + id)
     }
   }
+
+
 
   //: REFRESH and GET ALL SUBCATEGORIES
   function refreshSubcategoryList() {
@@ -193,6 +195,14 @@ const AdminSubcategory = () => {
                   <input className={"form-control"+applyErrorClass('name')} placeholder="Subcategory Name" name="name" 
                   value={values.name} 
                   onChange = {handleInputChange} />
+                </div>
+                <div className="form-group">
+                  <select>
+                    {maincategoryList.map(maincategory => (
+                      <option value={maincategory.id}>{maincategory.name}</option>
+                    )
+                    )}
+                  </select>
                 </div>
                 <div className="form-group text-center">
                   <button type="submit" className="btn btn-light">Submit</button>
