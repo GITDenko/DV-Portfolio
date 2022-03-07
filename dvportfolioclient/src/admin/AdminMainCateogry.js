@@ -19,12 +19,12 @@ const AdminMainCateogry = () => {
   const [maincategoryList, setMaincategorylist] = useState([])
 
 
-    //Use effect på maincategory, sub, photo, video etc.
-    useEffect(() =>{
-      if(recordForEdit != null)
-        setValues(recordForEdit);
-        refreshMainCategoryList();
-      }, [recordForEdit])
+  //Use effect på maincategory, sub, photo, video etc.
+  useEffect(() =>{
+    if(recordForEdit != null)
+      setValues(recordForEdit);
+      refreshMainCategoryList();
+    }, [recordForEdit])
 
 
   const handleInputChange = e => {
@@ -151,7 +151,7 @@ const AdminMainCateogry = () => {
   )
   return (
     <div className="container">
-      {/* En metod för att lägga till MainCategory */}
+      {/* POST */}
         <div className="row">
           <div className="col-md-12 text-center">
               <h1 className="display-4">Main Categories</h1>
@@ -182,7 +182,7 @@ const AdminMainCateogry = () => {
           </form>
         </div>
         
-        {/* LIST OF MAINCATEGORIES */}
+        {/* LIST */}
         <div className="col-md-8">
           <table>
             <tbody>

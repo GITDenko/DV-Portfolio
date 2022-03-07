@@ -5,8 +5,9 @@ import { BsFillTrashFill } from "react-icons/bs";
 
 const defaultImageSrc = '/img/missingimage.png'
 const initialFieldValues = {
-  maincategoryId: 0,
-  name: '', //Main Cateogry Name
+  id: 0,
+  maincategoryId: '',
+  name: '', //Subcateogry Name
   imageUrl: '', //imageName
   imageSrc: defaultImageSrc,
   imageFile: null //imageFile
@@ -17,16 +18,18 @@ const AdminSubcategory = () => {
   const [errors, setErrors] = useState({})
   const [recordForEdit, setRecordForEdit] = useState(null) /// Pass recordforEdit to child och AddorEdit
   const [maincategoryList, setMaincategorylist] = useState([])
+  const [subcategoryList, setSubcategorylist] = useState([])
 
 
-    //Use effect på maincategory, sub, photo, video etc.
-    useEffect(() =>{
-      if(recordForEdit != null)
-        setValues(recordForEdit);
-        refreshMainCategoryList();
-      }, [recordForEdit])
+  //Use effect på maincategory, sub, photo, video etc.
+  useEffect(() =>{
+    if(recordForEdit != null)
+      setValues(recordForEdit);
+      refreshSubcategoryList();
+    }, [recordForEdit])
 
 
+  ///Export?
   const handleInputChange = e => {
     const {name, value} = e.target;
     setValues({
@@ -35,6 +38,7 @@ const AdminSubcategory = () => {
     })
   }
 
+  ///Export?
   const showPreview = e => {
     if(e.target.files && e.target.files[0]){
       let imageFile = e.target.files[0];
@@ -57,6 +61,7 @@ const AdminSubcategory = () => {
     }
   }
 
+  ///Export?
   const validate = () => {
     let temp = {}
     temp.name = values.name==""?false:true;
@@ -71,6 +76,7 @@ const AdminSubcategory = () => {
       const formData = new FormData()
       formData.append('id', values.id) //Behövs nog ej
       formData.append('name', values.name)
+      formData.append('maincategoryId', values.maincategoryId)
       //formData.append('hidden', values.hidden) // Behövs nog ej
       formData.append('imageUrl', values.imageUrl) //ImageName
       formData.append('imageFile', values.imageFile)
@@ -81,7 +87,22 @@ const AdminSubcategory = () => {
   const applyErrorClass = field => ((field in errors && errors[field]==false)?' invalid-field': '')
 
   //: API FUNCTIONS
-  const maincategoryAPI = ( url = '/api/maincategory') => {
+  const subcategoryAPI = ( url = '/api/maincategory/') => {
+    
+    // CONST: Hämta alla subkategorier från alla maincategories
+    // Get all Main Categories
+    // subcategoryAPI().fetchAll()
+    // .then(res => setMaincategorylist(res.data))
+    // .catch(err => console.log(err))
+    // maincategoryList.forEach(element => {
+    //   console.log(element.id)
+    // });
+
+
+    //maincategoryList.id
+    // CONST: Få ett ID att posta och delete:a ifrån in i URL.
+    const subUrl = url + "x/subcategory/";
+
     return {
       fetchAll: () => axios.get(url),
       create: newRecord => axios.post(url, newRecord),
@@ -90,27 +111,27 @@ const AdminSubcategory = () => {
     }
   }
 
-  //: REFRESH and GET ALL MAIN CATEGORIES
-  function refreshMainCategoryList() {
-    maincategoryAPI().fetchAll()
-    .then(res => setMaincategorylist(res.data))
+  //: REFRESH and GET ALL SUBCATEGORIES
+  function refreshSubcategoryList() {
+    subcategoryAPI().fetchAll()
+    .then(res => setSubcategorylist(res.data))
     .catch(err => console.log(err))
   }
 
   //: CREATE OR UPDATE
   const addOrEdit = (formData, onSuccess) => {
     if(formData.get('id')=="0")
-      maincategoryAPI().create(formData)
+      subcategoryAPI().create(formData)
         .then(res => {
           onSuccess();
-          refreshMainCategoryList();
+          refreshSubcategoryList();
         })
         .catch(err => console.log(err))
     else
-      maincategoryAPI().update(formData.get('id'), formData)
+      subcategoryAPI().update(formData.get('id'), formData)
         .then(res => {
           onSuccess();
-          refreshMainCategoryList();
+          refreshSubcategoryList();
         })
         .catch(err => console.log(err))
   }
@@ -129,11 +150,12 @@ const AdminSubcategory = () => {
   const onDelete = (e, id) => {
     e.stopPropagation();
     if(window.confirm('Are you sure you want to delete this record?'))
-    maincategoryAPI().delete(id)
-    .then(res => refreshMainCategoryList())
+    subcategoryAPI().delete(id)
+    .then(res => refreshSubcategoryList())
     .catch(err => console.log(err))
   }
 
+  /// Export?
   const imageCard = data =>(
     <div className="card" onClick={() =>{showRecordDetails(data)}} >
       <div className="card-body">
@@ -149,7 +171,7 @@ const AdminSubcategory = () => {
   )
   return (
     <div className="container">
-      {/* En metod för att lägga till MainCategory */}
+      {/* POST */}
         <div className="row">
           <div className="col-md-12 text-center">
               <h1 className="display-4">Subcategories</h1>
@@ -180,16 +202,16 @@ const AdminSubcategory = () => {
           </form>
         </div>
         
-        {/* LIST OF MAINCATEGORIES */}
+        {/* LIST */}
         <div className="col-md-8">
           <table>
             <tbody>
               {
-                [...Array(Math.ceil(maincategoryList.length/3))].map((e,i) =>
+                [...Array(Math.ceil(subcategoryList.length/3))].map((e,i) =>
                   <tr key={i}>
-                    <td>{maincategoryList[3*i]?imageCard(maincategoryList[3*i]): null}</td>
-                    <td>{maincategoryList[3*i+1]?imageCard(maincategoryList[3*i+1]): null}</td>
-                    <td>{maincategoryList[3*i+2]?imageCard(maincategoryList[3*i+2]): null}</td>
+                    <td>{subcategoryList[3*i]?imageCard(subcategoryList[3*i]): null}</td>
+                    <td>{subcategoryList[3*i+1]?imageCard(subcategoryList[3*i+1]): null}</td>
+                    <td>{subcategoryList[3*i+2]?imageCard(subcategoryList[3*i+2]): null}</td>
                   </tr>
                 )
               }
