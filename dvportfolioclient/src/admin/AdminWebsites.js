@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../index.css";
+import { BsFillTrashFill } from "react-icons/bs";
 
 const defaultImageSrc = '/img/missingimage.png'
 const initialFieldValues = {
+  maincategoryId: 0,
   name: '', //Main Cateogry Name
   imageUrl: '', //imageName
   imageSrc: defaultImageSrc,
   imageFile: null //imageFile
 }
 
-const Admin = () => {
-  const url = '/api/maincategory'
+const AdminWebsites = () => {
   const [values, setValues] = useState(initialFieldValues)
   const [errors, setErrors] = useState({})
   const [recordForEdit, setRecordForEdit] = useState(null) /// Pass recordforEdit to child och AddorEdit
@@ -68,7 +69,7 @@ const Admin = () => {
     e.preventDefault()
     if(validate()){
       const formData = new FormData()
-      //formData.append('id', values.id) //Behövs nog ej
+      formData.append('id', values.id) //Behövs nog ej
       formData.append('name', values.name)
       //formData.append('hidden', values.hidden) // Behövs nog ej
       formData.append('imageUrl', values.imageUrl) //ImageName
@@ -98,12 +99,20 @@ const Admin = () => {
 
   //: CREATE OR UPDATE
   const addOrEdit = (formData, onSuccess) => {
-    maincategoryAPI().create(formData)
-    .then(res => {
-      onSuccess();
-      refreshMainCategoryList();
-    })
-    .catch(err => console.log(err))
+    if(formData.get('id')=="0")
+      maincategoryAPI().create(formData)
+        .then(res => {
+          onSuccess();
+          refreshMainCategoryList();
+        })
+        .catch(err => console.log(err))
+    else
+      maincategoryAPI().update(formData.get('id'), formData)
+        .then(res => {
+          onSuccess();
+          refreshMainCategoryList();
+        })
+        .catch(err => console.log(err))
   }
 
 
@@ -117,27 +126,38 @@ const Admin = () => {
     setRecordForEdit(data);
   }
 
+  const onDelete = (e, id) => {
+    e.stopPropagation();
+    if(window.confirm('Are you sure you want to delete this record?'))
+    maincategoryAPI().delete(id)
+    .then(res => refreshMainCategoryList())
+    .catch(err => console.log(err))
+  }
+
   const imageCard = data =>(
     <div className="card" onClick={() =>{showRecordDetails(data)}} >
       <div className="card-body">
         <img src={data.imageSrc} className="card-img-top rounded-circle"/>
         <div className="card-body">
-          <h5>{data.name}</h5>
+          <h5>{data.name}</h5> <br/>
+          <button className="btn btn-light delete-button" onClick={ e => onDelete(e, parseInt(data.Id))}>
+          <BsFillTrashFill/>
+          </button>
         </div>
       </div>
     </div>
   )
   return (
     <div className="container">
-     {/* En metod för att lägga till MainCategory */}
+      {/* En metod för att lägga till MainCategory */}
         <div className="row">
           <div className="col-md-12 text-center">
-              <h1 className="display-4">Maincategories</h1>
+              <h1 className="display-4">Websites</h1>
             </div>
         </div>
         <div className="col-md-4">
           <div className="container text-center">
-            <p className="lead">Maincategory</p>
+            <p className="lead">Post Website</p>
           </div>
           <form autoComplete="off" noValidate onSubmit={handleFormSubmit}>
             <div className="card">
@@ -148,7 +168,7 @@ const Admin = () => {
                   onChange={showPreview} id="image-uploader"/>
                 </div>
                 <div className="form-group">
-                  <input className={"form-control"+applyErrorClass('name')} placeholder="Main Category Name" name="name" 
+                  <input className={"form-control"+applyErrorClass('name')} placeholder="Website Name" name="name" 
                   value={values.name} 
                   onChange = {handleInputChange} />
                 </div>
@@ -182,5 +202,5 @@ const Admin = () => {
 }
 
 
-export default Admin;
+export default AdminWebsites;
 

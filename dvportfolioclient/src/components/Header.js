@@ -1,5 +1,5 @@
 import React from "react";
-import { Nav, Navbar, Container } from "react-bootstrap";
+import { Nav, Navbar, Container, NavDropdown } from "react-bootstrap";
 
 const Header = () => {
 
@@ -11,7 +11,14 @@ const Header = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav>
                         <Nav.Link href="/Home">Home</Nav.Link>
-                        <Nav.Link href="/Admin">Admin</Nav.Link>
+                        <NavDropdown title="Admin" id="basic-nav-dropdown">
+                            <NavDropdown.Item href="/adminmaincategory">Main Categories</NavDropdown.Item>
+                            <NavDropdown.Item href="/adminsubcategory">Subcategories</NavDropdown.Item>
+                            <NavDropdown.Divider />
+                            <NavDropdown.Item href="/adminphotos">Photos</NavDropdown.Item>
+                            <NavDropdown.Item href="/adminvideos">Videos</NavDropdown.Item>
+                            <NavDropdown.Item href="/adminwebsites">Websites</NavDropdown.Item>
+                        </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

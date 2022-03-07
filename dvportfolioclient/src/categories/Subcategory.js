@@ -1,5 +1,4 @@
 import React from "react";
-import '../products/Products.css';
 import GetRequest from "../components/httprequests/GetRequest";
 import { Link, useLocation } from "react-router-dom";
 import Products from "../products/Products";

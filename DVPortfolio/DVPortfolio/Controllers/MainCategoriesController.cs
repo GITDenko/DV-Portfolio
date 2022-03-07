@@ -35,18 +35,19 @@ namespace DVPortfolio.Controllers
         public IActionResult GetMainCategories()
         {
             var maincategories = _repository.MainCategory.GetAllMainCategories(trackChanges: false)
-                .Select(x => new MainCategory() { 
-                Id = x.Id,
-                Name = x.Name,
-                Hidden = x.Hidden,
-                Subcategories = x.Subcategories,
-                Photos = x.Photos,
-                Videos = x.Videos,
-                Websites = x.Websites,
-                ImageURL = x.ImageURL,
-                ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageURL)
+                .Select(x => new MainCategory()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Hidden = x.Hidden,
+                    Subcategories = x.Subcategories,
+                    Photos = x.Photos,
+                    Videos = x.Videos,
+                    Websites = x.Websites,
+                    ImageURL = x.ImageURL,
+                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageURL)
                 });
-                //.ToList();
+            //.ToList();
             //var categoriesDto = _mapper.Map < IEnumerable <MainCategoryDto>>(maincategories);
             //^Kanske flyttar tbx på den här
 
@@ -57,7 +58,7 @@ namespace DVPortfolio.Controllers
         public IActionResult GetMainCategory(int id)
         {
             var maincategory = _repository.MainCategory.GetMainCategory(id, trackChanges: false);
-            if(maincategory == null)
+            if (maincategory == null)
             {
                 _logger.LogInfo($"Main Category with id: {id} doesn't exist in the database.");
                 return NotFound();
@@ -70,9 +71,9 @@ namespace DVPortfolio.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateMainCategory([FromForm]MainCategory mainCategory)
+        public IActionResult CreateMainCategory([FromForm] MainCategory mainCategory)
         {
-            if(mainCategory == null)
+            if (mainCategory == null)
             {
                 _logger.LogError("MainCategoryForCreationDto object sent from client is null.");
                 return BadRequest("CompanyForCreationDto object is null");
@@ -92,18 +93,47 @@ namespace DVPortfolio.Controllers
             return StatusCode(201);
             //return CreatedAtRoute("MainCategoryById", new { id = mainCategoryToReturn.Id }, mainCategoryToReturn);
         }
-    
-    
-        [HttpDelete("{maincategoryId}")]
-        public IActionResult DeleteMainCategory(int maincategoryId)
+
+        [HttpPut("{maincategoryId}")]
+        public IActionResult PutMainCategroy(int maincategoryId, [FromForm] MainCategory mainCategory)
         {
-            var maincategory = _repository.MainCategory.GetMainCategory(maincategoryId, trackChanges: false);
-            if (maincategory == null)
+            if (mainCategory == null)
             {
-                _logger.LogInfo($"Main cateogry with id: {maincategoryId} doesn't exist in the database.");
+                _logger.LogError("Dto object sent from client is null.");
+                return BadRequest("Dto object sent from client is null.");
+            }
+
+            var maincategoryEntity = _repository.MainCategory.GetMainCategory(maincategoryId, trackChanges: false);
+            if (maincategoryEntity == null)
+            {
+                _logger.LogInfo($"Maincategory with id: {maincategoryId} doesn't exist in the database.");
                 return NotFound();
             }
 
+            if (maincategoryEntity.ImageFile != null)
+            {
+                DeleteImage(maincategoryEntity.ImageURL);
+                mainCategory.ImageURL = SaveImage(mainCategory.ImageFile);
+            }
+
+            _mapper.Map(mainCategory, maincategoryEntity);
+            _repository.Save();
+
+            return NoContent();
+        }
+
+
+        [HttpDelete("{Id}")]
+        public IActionResult DeleteMainCategory(int Id)
+        {
+            var maincategory = _repository.MainCategory.GetMainCategory(Id, trackChanges: false);
+            if (maincategory == null)
+            {
+                _logger.LogInfo($"Main cateogry with id: {Id} doesn't exist in the database.");
+                return NotFound();
+            }
+
+            DeleteImage(maincategory.ImageURL);
             _repository.MainCategory.DeleteMainCategory(maincategory);
             _repository.Save();
 
@@ -122,6 +152,18 @@ namespace DVPortfolio.Controllers
                 imageFile.CopyTo(fileStream);
             }
             return imageName;
+        }
+
+        [NonAction]
+        public string DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
+            return null;
         }
     }
 }

@@ -1,5 +1,4 @@
 import React from "react";
-import './Products.css';
 import Photo from "./Photo";
 import Video from "./Video";
 import Website from "./Website";

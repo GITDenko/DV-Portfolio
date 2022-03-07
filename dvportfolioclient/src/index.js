@@ -6,7 +6,11 @@ import Header from './components/Header';
 import MainCategory from './categories/MainCategory';
 import Subcategory from './categories/Subcategory';
 import Products from './products/Products';
-import Admin from './admin/Admin';
+import AdminMainCateogry from './admin/AdminMainCateogry';
+import AdminSubcategory from './admin/AdminSubcategory';
+import AdminPhoto from './admin/AdminPhotos';
+import AdminVideo from './admin/AdminVideos';
+import AdminWebsite from './admin/AdminWebsites';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
@@ -18,7 +22,11 @@ ReactDOM.render(
           <Route exact path="/*" element={<MainCategory />} />
           <Route exact path="/subcategory" element={<Subcategory />} />
           <Route exact path="/products" element={<Products />} />
-          <Route exact path="/admin" element={<Admin />} />
+          <Route exact path="/adminmaincategory" element={<AdminMainCateogry/>} />
+          <Route exact path="/adminsubcategory" element={<AdminSubcategory/>} />
+          <Route exact path="/adminphotos" element={<AdminPhoto/>} />
+          <Route exact path="/adminvideos" element={<AdminVideo/>} />
+          <Route exact path="/adminwebsites" element={<AdminWebsite/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

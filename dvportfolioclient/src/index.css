@@ -12,6 +12,22 @@ code {
     monospace;
 }
 
+/* PRODUCTS */
+.Product {
+  background-color: blueviolet;
+  width: 420px;
+  height: 315px;
+  float: left;
+}
+
+.ProductText{
+  text-align: center;
+  vertical-align: middle;
+  line-height: 290px;
+  opacity: 100;
+}
+
+/* ADMIN */
 .invalid-field{
   border-color: red;
   color: red;
