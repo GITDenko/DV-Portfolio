@@ -23799,3 +23799,34 @@
 2022-03-08 17:22:27.3185 Trace  Scanning Property LineEnding 'Default' NLog.Targets
 2022-03-08 17:22:27.3185 Trace File Target[logfile] has 2 layouts
 2022-03-08 17:22:27.3185 Trace FileTarget(Name=logfile): Using appenderFactory: NLog.Internal.FileAppenders.RetryingMultiProcessFileAppender+Factory
+2022-03-08 17:57:28.8366 Debug Targets for LoggerService.LoggerManager by level:
+2022-03-08 17:57:28.8366 Debug Trace =>
+2022-03-08 17:57:28.8366 Debug Debug => logfile
+2022-03-08 17:57:28.8366 Debug Info => logfile
+2022-03-08 17:57:28.8366 Debug Warn => logfile
+2022-03-08 17:57:28.8366 Debug Error => logfile
+2022-03-08 17:57:28.8366 Debug Fatal => logfile
+2022-03-08 17:57:28.8506 Debug FileTarget(Name=logfile): Preparing for new file 'C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt'
+2022-03-08 17:57:28.8506 Debug Creating file appender: C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt
+2022-03-08 17:57:28.8506 Trace Opening C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt with allowFileSharedWriting=False
+2022-03-08 17:57:28.8506 Warn Attempt #0 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 0ms
+2022-03-08 17:57:28.8506 Warn Attempt #1 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 1ms
+2022-03-08 17:57:28.8506 Warn Attempt #2 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 0ms
+2022-03-08 17:57:28.8506 Warn Attempt #3 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 1ms
+2022-03-08 17:57:28.8760 Warn Attempt #4 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 2ms
+2022-03-08 17:57:28.8909 Warn Attempt #5 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 20ms
+2022-03-08 17:57:28.9230 Warn Attempt #6 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 30ms
+2022-03-08 17:57:28.9548 Warn Attempt #7 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 98ms
+2022-03-08 17:57:29.0646 Warn Attempt #8 to open C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt failed. Sleeping for 177ms
+2022-03-08 17:57:29.2539 Error FileTarget(Name=logfile): Failed write to file 'C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt'. Exception: System.IO.DirectoryNotFoundException: Could not find a part of the path 'C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt'.
+   at System.IO.FileStream.ValidateFileHandle(SafeFileHandle fileHandle)
+   at System.IO.FileStream.CreateFileOpenHandle(FileMode mode, FileShare share, FileOptions options)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, FileOptions options)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize)
+   at System.IO.File.Create(String path)
+   at NLog.Internal.FileAppenders.BaseFileAppender.UpdateCreationTime()
+   at NLog.Internal.FileAppenders.BaseFileAppender.TryCreateFileStream(Boolean allowFileSharedWriting, Int32 overrideBufferSize)
+   at NLog.Internal.FileAppenders.BaseFileAppender.CreateFileStream(Boolean allowFileSharedWriting, Int32 overrideBufferSize)
+   at NLog.Internal.FileAppenders.RetryingMultiProcessFileAppender.Write(Byte[] bytes, Int32 offset, Int32 count)
+   at NLog.Targets.FileTarget.WriteToFile(String fileName, ArraySegment`1 bytes, Boolean initializedNewFile)
+2022-03-08 17:57:29.2684 Debug FileAppender Closing Invalidate - C:\Users\Denis Velevski\Documents\GitHub\DVPortfolio\DVPortfolio\logs \2022-03-08_logfile.txt

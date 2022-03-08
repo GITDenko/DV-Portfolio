@@ -6,7 +6,7 @@ import { BsFillTrashFill } from "react-icons/bs";
 const defaultImageSrc = '/img/missingimage.png'
 const initialFieldValues = {
   maincategoryId: 0,
-  name: '', //Main Cateogry Name
+  subcategoryId: 0,
   imageUrl: '', //imageName
   imageSrc: defaultImageSrc,
   imageFile: null //imageFile
@@ -17,23 +17,15 @@ const AdminPhotos = () => {
   const [errors, setErrors] = useState({})
   const [recordForEdit, setRecordForEdit] = useState(null) /// Pass recordforEdit to child och AddorEdit
   const [maincategoryList, setMaincategorylist] = useState([])
+  const [subcategoryList, setSubcategorylist] = useState([])
 
 
-    //Use effect på maincategory, sub, photo, video etc.
-    useEffect(() =>{
-      if(recordForEdit != null)
-        setValues(recordForEdit);
-        refreshMainCategoryList();
-      }, [recordForEdit])
-
-
-  const handleInputChange = e => {
-    const {name, value} = e.target;
-    setValues({
-      ...values,
-      [name]: value
-    })
-  }
+  //Use effect på maincategory, sub, photo, video etc.
+  useEffect(() =>{
+    if(recordForEdit != null)
+      setValues(recordForEdit);
+      refreshMainCategoryList();
+    }, [recordForEdit])
 
   const showPreview = e => {
     if(e.target.files && e.target.files[0]){
@@ -59,7 +51,6 @@ const AdminPhotos = () => {
 
   const validate = () => {
     let temp = {}
-    temp.name = values.name==""?false:true;
     temp.imageSrc = values.imageSrc==defaultImageSrc?false:true;
     setErrors(temp)
     return Object.values(temp).every(x => x==true)
@@ -70,7 +61,8 @@ const AdminPhotos = () => {
     if(validate()){
       const formData = new FormData()
       formData.append('id', values.id) //Behövs nog ej
-      formData.append('name', values.name)
+      formData.append('maincategoryId', values.maincategoryId)
+      formData.append('subcategoryId', values.subcategoryId)
       //formData.append('hidden', values.hidden) // Behövs nog ej
       formData.append('imageUrl', values.imageUrl) //ImageName
       formData.append('imageFile', values.imageFile)
@@ -82,6 +74,19 @@ const AdminPhotos = () => {
 
   //: API FUNCTIONS
   const maincategoryAPI = ( url = '/api/maincategory') => {
+    return {
+      fetchAll: () => axios.get(url),
+      create: newRecord => axios.post(url, newRecord),
+      update: (id, updateRecord) => axios.put(url, updateRecord),
+      delete: id => axios.delete(url + id)
+    }
+  }
+
+  //: API FUNCTIONS
+  const subcategoryAPI = ( url ) => {
+    //maincategoryList.id
+    // CONST: Få ett ID att posta och delete:a ifrån in i URL.
+
     return {
       fetchAll: () => axios.get(url),
       create: newRecord => axios.post(url, newRecord),
@@ -134,6 +139,39 @@ const AdminPhotos = () => {
     .catch(err => console.log(err))
   }
 
+  const handleInputChange = e => {
+    const {name, value} = e.target;
+    setValues({
+      ...values,
+      [name]: value
+    })
+  }
+
+  const updateMainCategory = e => {
+
+ /////////// values.maincategoryId vet jag inte om den stämmer
+ //////////// res.data är nog också fel.
+    subcategoryAPI('/api/maincategory/' + values.maincategoryId + "/subcategory/").fetchAll()
+    .then(res => setSubcategorylist(res.data))
+    .catch(err => console.log(err))
+    // Get all subcategories
+    // Set all subcategories
+    // Set maincategoryId as null (eller 0) om subcategory har värde
+
+    refreshMainCategoryList();
+    handleInputChange(e);
+  }
+
+  const updateSubcategory = e => {
+    refreshMainCategoryList();
+
+    // subcategoryAPI().fetchAll()
+    // .then(res => setMaincategorylist(res.data))
+    // .catch(err => console.log(err))
+    handleInputChange(e);
+  }
+
+
   const imageCard = data =>(
     <div className="card" onClick={() =>{showRecordDetails(data)}} >
       <div className="card-body">
@@ -167,11 +205,35 @@ const AdminPhotos = () => {
                   <input type="file" accept="image/*" className={"form-control-file"+applyErrorClass('imageSrc')} 
                   onChange={showPreview} id="image-uploader"/>
                 </div>
+
+                {/* Main Cateogry */}
                 <div className="form-group">
-                  <input className={"form-control"+applyErrorClass('name')} placeholder="Photo Name" name="name" 
-                  value={values.name} 
-                  onChange = {handleInputChange} />
+                  <select 
+                  name="maincategoryId"
+                  value={values.maincategoryId}
+                  onChange={updateMainCategory}>
+                    {maincategoryList.map(maincategory => (
+                      <option value={maincategory.id}>{maincategory.name}</option>
+                    )
+                    )}
+                  </select>
                 </div>
+
+                {/* Subcateogry */}
+                <div className="form-group">
+                  <select 
+                  name="subcategoryId"
+                  value={values.subcategoryId}
+                  onChange={updateSubcategory}>
+                    <option value={values.subcategoryId}> </option>
+                    {subcategoryList.map(subcategory => (
+                      <option value={subcategory.id}>{subcategory.name}</option>
+                    )
+                    )}
+                  </select>
+                </div>
+
+
                 <div className="form-group text-center">
                   <button type="submit" className="btn btn-light">Submit</button>
                 </div>
