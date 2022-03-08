@@ -15,15 +15,15 @@ const Subcategory = () => {
         try {
           return subcategories.map((subcategory, i) => (
             <Link 
+              className="Product"
               key={i}
               to="/Products/"
               state={{
                 selectedSubcategory: subcategory,
                 selectedUrl: url
               }}>
-              <div className="Product">
+                <img className="ProductImg" src={maincategory.imageSrc}/>
                 <h2 className="ProductText">{subcategory.name}</h2>
-              </div>
             </Link>
           ))
         } catch(e){}

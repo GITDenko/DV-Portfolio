@@ -14,17 +14,26 @@ code {
 
 /* PRODUCTS */
 .Product {
-  background-color: blueviolet;
+  background-color: lightblue;
   width: 420px;
   height: 315px;
   float: left;
 }
 
 .ProductText{
+  display: block;
+  color: white;
+  text-decoration: none;
   text-align: center;
-  vertical-align: middle;
-  line-height: 290px;
+  margin-top: -180px;
   opacity: 100;
+}
+
+.ProductImg {
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: scale-down;
 }
 
 /* ADMIN */
