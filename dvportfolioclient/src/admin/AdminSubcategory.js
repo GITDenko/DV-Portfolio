@@ -85,11 +85,12 @@ const AdminSubcategory = () => {
       const formData = new FormData()
       formData.append('id', values.id) //Behövs nog ej
       formData.append('name', values.name)
-      formData.append('maincategoryId', values.maincategoryId)
+      //formData.append('maincategoryId', values.maincategoryId)
       //formData.append('hidden', values.hidden) // Behövs nog ej
       formData.append('imageUrl', values.imageUrl) //ImageName
       formData.append('imageFile', values.imageFile)
       addOrEdit(formData, resetForm)
+      console.log(formData)
     }
   }
 
@@ -97,9 +98,7 @@ const AdminSubcategory = () => {
 
   //: API FUNCTIONS
   const subcategoryAPI = ( url = '/api/maincategory/' + values.maincategoryId + "/subcategory/") => {
-    //maincategoryList.id
-    // CONST: Få ett ID att posta och delete:a ifrån in i URL.
-
+    console.log(url)
     return {
       fetchAll: () => axios.get(url),
       create: newRecord => axios.post(url, newRecord),
@@ -117,6 +116,7 @@ const AdminSubcategory = () => {
 
   //: CREATE OR UPDATE
   const addOrEdit = (formData, onSuccess) => {
+    console.log(formData)
     if(formData.get('id')=="0")
       subcategoryAPI().create(formData)
         .then(res => {
