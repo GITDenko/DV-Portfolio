@@ -3,9 +3,12 @@ using Contracts;
 using Entities;
 using Entities.DataTransferObjects;
 using LoggerService;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,12 +21,14 @@ namespace DVPortfolio.Controllers
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public SubcategoriesController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper)
+        public SubcategoriesController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IWebHostEnvironment hostEnvironment)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: All Subcategories from Main Category
@@ -68,7 +73,7 @@ namespace DVPortfolio.Controllers
 
         // POST: Subcategory to Main Category
         [HttpPost]
-        public IActionResult CreateSubForMaincategory(int mainCategoryId, [FromBody]SubcategoryForCreationDto subcategory)
+        public IActionResult CreateSubForMaincategory(int mainCategoryId, [FromForm]Subcategory subcategory)
         {
             if(subcategory == null)
             {
@@ -83,15 +88,14 @@ namespace DVPortfolio.Controllers
                 return NotFound();
             }
 
+            subcategory.ImageURL = SaveImage(subcategory.ImageFile);
             var subcategoryEntity = _mapper.Map<Subcategory>(subcategory);
 
             _repository.Subcategory.CreateSubcategory(mainCategoryId, subcategoryEntity);
             _repository.Save();
 
-            var subcategoryToReturn = _mapper.Map<SubcategoryDto>(subcategoryEntity);
-
-            return CreatedAtRoute("GetSubForMaincateogry", new { mainCategoryId, subcategoryId = subcategoryToReturn.Id }, subcategoryToReturn);
-
+            //return CreatedAtRoute("GetSubForMaincateogry", new { mainCategoryId, subcategoryId = subcategoryToReturn.Id }, subcategoryToReturn);
+            return StatusCode(201);
         }
 
 
@@ -119,7 +123,31 @@ namespace DVPortfolio.Controllers
             return NoContent();
         }
 
+        [NonAction]
+        public string SaveImage(IFormFile imageFile)
+        {
+            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                //await imageFile.CopyToAsync(fileStream); 55:17
+                imageFile.CopyTo(fileStream);
+            }
+            return imageName;
+        }
 
+        [NonAction]
+        public string DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
+            return null;
+        }
 
     }
 }

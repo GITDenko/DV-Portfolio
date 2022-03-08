@@ -79,7 +79,7 @@ namespace DVPortfolio.Controllers
                 return BadRequest("CompanyForCreationDto object is null");
             }
 
-            mainCategory.ImageURL = SaveImage(mainCategory.ImageFile); //55:51
+            mainCategory.ImageURL = SaveImage(mainCategory.ImageFile);
             var mainCategoryEntity = _mapper.Map<MainCategory>(mainCategory);
 
 

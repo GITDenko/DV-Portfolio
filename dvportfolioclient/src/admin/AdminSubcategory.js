@@ -55,7 +55,7 @@ const AdminSubcategory = () => {
       reader.onload = x => {
         setValues({
           ...values,
-          imageFile: null,
+          imageFile,
           imageSrc: x.target.result
         })
       }
@@ -132,7 +132,6 @@ const AdminSubcategory = () => {
         })
         .catch(err => console.log(err))
   }
-
 
   const resetForm = () =>{
     setValues(initialFieldValues)
@@ -236,6 +235,4 @@ const AdminSubcategory = () => {
   );
 }
 
-
 export default AdminSubcategory;
-
