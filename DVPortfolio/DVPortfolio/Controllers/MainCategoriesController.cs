@@ -81,7 +81,7 @@ namespace DVPortfolio.Controllers
 
             mainCategory.ImageURL = SaveImage(mainCategory.ImageFile); //55:51
             var mainCategoryEntity = _mapper.Map<MainCategory>(mainCategory);
-
+            ////////// versaler i variabler
 
             _repository.MainCategory.CreateMainCategory(mainCategoryEntity);
             _repository.Save();

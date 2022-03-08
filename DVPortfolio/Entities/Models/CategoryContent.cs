@@ -14,7 +14,6 @@ namespace Entities
         public int Id { get; set; }
         [Required(ErrorMessage = "Category name is a required field.")]
         public string Name { get; set; }
-        [Required(ErrorMessage = "Image URL is a required field.")]
         public string ImageURL { get; set; }
         [NotMapped]
         public IFormFile ImageFile { get; set; }

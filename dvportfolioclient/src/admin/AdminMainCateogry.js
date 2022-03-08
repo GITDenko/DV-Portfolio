@@ -52,7 +52,7 @@ const AdminMainCateogry = () => {
       reader.onload = x => {
         setValues({
           ...values,
-          imageFile: null,
+          imageFile,
           imageSrc: x.target.result
         })
       }
