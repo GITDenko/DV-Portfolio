@@ -127,7 +127,7 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Subcategory with id: {subcategoryId} doesn't exist in the database.");
                 return NotFound();
             }
-
+            DeleteImage(subcategoryFromDb.ImageURL);
             _repository.Subcategory.DeleteSubcategory(subcategoryFromDb);
             _repository.Save();
 

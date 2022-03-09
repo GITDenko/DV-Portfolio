@@ -233,7 +233,7 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Website with id: {WebsiteId} doesn't exist in the database.");
                 return NotFound();
             }
-
+            DeleteImage(websiteFromDb.ProductUrl);
             _repository.Website.DeleteWebsite(websiteFromDb);
             _repository.Save();
 
@@ -264,7 +264,7 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Website with id: {WebsiteId} doesn't exist in the database.");
                 return NotFound();
             }
-
+            DeleteImage(websiteFromDb.ProductUrl);
             _repository.Website.DeleteWebsite(websiteFromDb);
             _repository.Save();
 

@@ -222,7 +222,7 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Photo with id: {PhotoId} doesn't exist in the database.");
                 return NotFound();
             }
-
+            DeleteImage(photoFromDb.ProductUrl);
             _repository.Photo.DeletePhoto(photoFromDb);
             _repository.Save();
 
@@ -253,7 +253,7 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Photo with id: {PhotoId} doesn't exist in the database.");
                 return NotFound();
             }
-
+            DeleteImage(photoFromDb.ProductUrl);
             _repository.Photo.DeletePhoto(photoFromDb);
             _repository.Save();
 
