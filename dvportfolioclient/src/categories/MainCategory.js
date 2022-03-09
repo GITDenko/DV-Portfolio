@@ -1,18 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import GetRequest from "../components/httprequests/GetRequest";
 import { Link } from "react-router-dom";
 
 const MainCategory = () => {
   const maincategories = GetRequest("/api/maincategory/")
-  console.log(maincategories)
-
+  
   return (
-    <>
+    <div className="container">
       {(() => {
         try {
           return maincategories.map((maincategory, i) => (
             <Link
-              className="Product"
+              className='Product fade-in-image'
               key={i}
               to="/Subcategory/"
               state={{
@@ -24,7 +23,7 @@ const MainCategory = () => {
           ))
         } catch(e){}
       })()}
-    </>
+    </div>
   );
 }
 

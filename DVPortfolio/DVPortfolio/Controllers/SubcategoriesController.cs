@@ -42,11 +42,23 @@ namespace DVPortfolio.Controllers
                 return NotFound();
             }
 
-            var subcategoriesFromDb = _repository.Subcategory.GetSubcategories(maincategoryId, trackChanges: false);
+            var subcategoriesFromDb = _repository.Subcategory.GetSubcategories(maincategoryId, trackChanges: false)
+                .Select(x => new Subcategory()
+                {
+                    Id = x.Id,
+                    MainCategoryId = x.MainCategoryId,
+                    Name = x.Name,
+                    Hidden = x.Hidden,
+                    Photos = x.Photos,
+                    Videos = x.Videos,
+                    Websites = x.Websites,
+                    ImageURL = x.ImageURL,
+                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageURL)
+                });
 
-            var subcategoriesDto = _mapper.Map<IEnumerable<SubcategoryDto>>(subcategoriesFromDb);
+            //var subcategoriesDto = _mapper.Map<IEnumerable<SubcategoryDto>>(subcategoriesFromDb);
 
-            return Ok(subcategoriesDto);
+            return Ok(subcategoriesFromDb);
         }
         // GET: Subcategory from Main Category
         [HttpGet("{subcategoryId}", Name = "GetSubForMaincateogry")]

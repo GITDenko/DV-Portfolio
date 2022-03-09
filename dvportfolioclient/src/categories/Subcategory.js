@@ -8,27 +8,28 @@ const Subcategory = () => {
   const url = "/api/maincategory/" + maincategory.id + "/subcategory";
 
   const subcategories = GetRequest(url);
+  console.log(subcategories)
 
   return (
-    <>
+    <div className="container">
       {(() => {
         try {
           return subcategories.map((subcategory, i) => (
             <Link 
-              className="Product"
+              className="Product fade-in-image"
               key={i}
               to="/Products/"
               state={{
                 selectedSubcategory: subcategory,
                 selectedUrl: url
               }}>
-                <img className="ProductImg" src={maincategory.imageSrc}/>
+                <img className="ProductImg" src={subcategory.imageSrc}/>
                 <h2 className="ProductText">{subcategory.name}</h2>
             </Link>
           ))
         } catch(e){}
       })()}
-    </>
+    </div>
   );
 }
 

@@ -47,9 +47,6 @@ namespace DVPortfolio.Controllers
                     ImageURL = x.ImageURL,
                     ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageURL)
                 });
-            //.ToList();
-            //var categoriesDto = _mapper.Map < IEnumerable <MainCategoryDto>>(maincategories);
-            //^Kanske flyttar tbx på den här
 
             return Ok(maincategories);
         }

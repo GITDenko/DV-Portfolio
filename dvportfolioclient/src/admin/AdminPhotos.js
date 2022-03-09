@@ -15,9 +15,10 @@ const initialFieldValues = {
 const AdminPhotos = () => {
   const [values, setValues] = useState(initialFieldValues)
   const [errors, setErrors] = useState({})
-  const [recordForEdit, setRecordForEdit] = useState(null) /// Pass recordforEdit to child och AddorEdit
+  const [recordForEdit, setRecordForEdit] = useState(null)
   const [maincategoryList, setMaincategorylist] = useState([])
   const [subcategoryList, setSubcategorylist] = useState([])
+  const [photoList, setPhotolist] = useState([])
 
 
   //Use effect på maincategory, sub, photo, video etc.
@@ -84,9 +85,6 @@ const AdminPhotos = () => {
 
   //: API FUNCTIONS
   const subcategoryAPI = ( url ) => {
-    //maincategoryList.id
-    // CONST: Få ett ID att posta och delete:a ifrån in i URL.
-
     return {
       fetchAll: () => axios.get(url),
       create: newRecord => axios.post(url, newRecord),
@@ -95,11 +93,17 @@ const AdminPhotos = () => {
     }
   }
 
-  //: REFRESH and GET ALL MAIN CATEGORIES
-  function refreshMainCategoryList() {
-    maincategoryAPI().fetchAll()
-    .then(res => setMaincategorylist(res.data))
+  const refreshPhotoList = () => {
+    const url = '/api/maincategory/' + values.maincategoryId + '/photos/'
+    if(values.subcategoryId != null){
+      url = '/api/maincategory/' + values.maincategoryId + '/subcategory/' + values.subcategoryId + '/photos/'
+    }
+    console.log("refresh Photo URL: " + url)
+
+    subcategoryAPI(url).fetchAll()
+    .then(res => setPhotolist(res.data))
     .catch(err => console.log(err))
+
   }
 
   //: CREATE OR UPDATE
@@ -108,14 +112,14 @@ const AdminPhotos = () => {
       maincategoryAPI().create(formData)
         .then(res => {
           onSuccess();
-          refreshMainCategoryList();
+          refreshPhotoList();
         })
         .catch(err => console.log(err))
     else
       maincategoryAPI().update(formData.get('id'), formData)
         .then(res => {
           onSuccess();
-          refreshMainCategoryList();
+          refreshPhotoList();
         })
         .catch(err => console.log(err))
   }
@@ -147,27 +151,23 @@ const AdminPhotos = () => {
     })
   }
 
-  const updateMainCategory = e => {
+ //: REFRESH and GET ALL MAIN CATEGORIES
+ function refreshMainCategoryList() {
+  maincategoryAPI().fetchAll()
+  .then(res => setMaincategorylist(res.data))
+  .catch(err => console.log(err))
+}
 
- /////////// values.maincategoryId vet jag inte om den stämmer
- //////////// res.data är nog också fel.
+  const updateMainCategory = e => {
     subcategoryAPI('/api/maincategory/' + values.maincategoryId + "/subcategory/").fetchAll()
     .then(res => setSubcategorylist(res.data))
     .catch(err => console.log(err))
-    // Get all subcategories
-    // Set all subcategories
-    // Set maincategoryId as null (eller 0) om subcategory har värde
-
-    refreshMainCategoryList();
+    refreshPhotoList();
     handleInputChange(e);
   }
 
   const updateSubcategory = e => {
-    refreshMainCategoryList();
-
-    // subcategoryAPI().fetchAll()
-    // .then(res => setMaincategorylist(res.data))
-    // .catch(err => console.log(err))
+    refreshPhotoList();
     handleInputChange(e);
   }
 
@@ -247,11 +247,11 @@ const AdminPhotos = () => {
           <table>
             <tbody>
               {
-                [...Array(Math.ceil(maincategoryList.length/3))].map((e,i) =>
+                [...Array(Math.ceil(photoList.length/3))].map((e,i) =>
                   <tr key={i}>
-                    <td>{maincategoryList[3*i]?imageCard(maincategoryList[3*i]): null}</td>
-                    <td>{maincategoryList[3*i+1]?imageCard(maincategoryList[3*i+1]): null}</td>
-                    <td>{maincategoryList[3*i+2]?imageCard(maincategoryList[3*i+2]): null}</td>
+                    <td>{photoList[3*i]?imageCard(photoList[3*i]): null}</td>
+                    <td>{photoList[3*i+1]?imageCard(photoList[3*i+1]): null}</td>
+                    <td>{photoList[3*i+2]?imageCard(photoList[3*i+2]): null}</td>
                   </tr>
                 )
               }
