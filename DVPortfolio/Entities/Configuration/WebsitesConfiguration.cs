@@ -28,7 +28,7 @@ namespace Entities.Configuration
                 {
                     Id = 1,
                     Name = "Google",
-                    ThumbnailURL = "google.jpg",
+                    ImageURL = "google.jpg",
                     MainCategoryId = 3,
                     SubcategoryId = null,
                     ProductUrl = "https://www.google.com",

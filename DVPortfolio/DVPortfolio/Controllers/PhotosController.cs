@@ -3,9 +3,12 @@ using Contracts;
 using Entities;
 using Entities.DataTransferObjects;
 using LoggerService;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,12 +21,14 @@ namespace DVPortfolio.Controllers
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public PhotosController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper)
+        public PhotosController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IWebHostEnvironment hostEnvironment)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: All Photos from Main category
@@ -37,11 +42,20 @@ namespace DVPortfolio.Controllers
                 return NotFound();
             }
 
-            var photosFromDb = _repository.Photo.GetPhotosByMain(MainCategoryId, trackChanges: false);
+            var photosFromDb = _repository.Photo.GetPhotosByMain(MainCategoryId, trackChanges: false)
+                .Select(x => new Photo()
+                {
+                    Id = x.Id,
+                    ProductUrl = x.ProductUrl,
+                    CreatedOn = x.CreatedOn,
+                    Hidden = x.Hidden,
+                    MainCategoryId = x.MainCategoryId,
+                    SubcategoryId = x.SubcategoryId,
+                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ProductUrl)
+                });
 
-            var photosDto = _mapper.Map<IEnumerable<PhotoDto>>(photosFromDb);
-
-            return Ok(photosDto);
+            //var photosDto = _mapper.Map<IEnumerable<PhotoDto>>(photosFromDb);
+            return Ok(photosFromDb);
         }
         
         // GET: All Photos from Subcategory
@@ -55,13 +69,24 @@ namespace DVPortfolio.Controllers
                 return NotFound();
             }
 
-            var photosFromDb = _repository.Photo.GetPhotosBySub(SubcategoryId, trackChanges: false);
+            var photosFromDb = _repository.Photo.GetPhotosBySub(SubcategoryId, trackChanges: false)
+                .Select(x => new Photo()
+                {
+                    Id = x.Id,
+                    ProductUrl = x.ProductUrl,
+                    CreatedOn = x.CreatedOn,
+                    Hidden = x.Hidden,
+                    MainCategoryId = x.MainCategoryId,
+                    SubcategoryId = x.SubcategoryId,
+                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ProductUrl)
+                });
 
-            var photosDto = _mapper.Map<IEnumerable<PhotoDto>>(photosFromDb);
+            //var photosDto = _mapper.Map<IEnumerable<PhotoDto>>(photosFromDb);
 
-            return Ok(photosDto);
+            return Ok(photosFromDb);
 
         }
+
         // GET: Photo from Main category
         [HttpGet("photos/{PhotoId}", Name = "GetPhotoForMaincateogry")]
         public IActionResult GetPhotoForMaincateogry(int MainCategoryId, int PhotoId)
@@ -119,7 +144,7 @@ namespace DVPortfolio.Controllers
 
         // POST: Photo to Main Category
         [HttpPost("photos")]
-        public IActionResult CreatePhotoForMaincateogry(int mainCategoryId, [FromBody] PhotoForCreationDto photo)
+        public IActionResult CreatePhotoForMaincateogry(int mainCategoryId, [FromForm]Photo photo)
         {
             if (photo == null)
             {
@@ -133,22 +158,20 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Main Category with id: {mainCategoryId} doesn't exist in the database.");
                 return NotFound();
             }
-
+            photo.ProductUrl = SaveImage(photo.ImageFile);
             var photoEntity = _mapper.Map<Photo>(photo);
 
             _repository.Photo.CreatePhotoByMain(mainCategoryId, photoEntity);
             _repository.Save();
 
-            
-            var photoToReturn = _mapper.Map<PhotoDto>(photoEntity);
-
-            return CreatedAtRoute("GetPhotoForMaincateogry", new { mainCategoryId, PhotoId = photoToReturn.Id }, photoToReturn);
-
+            //var photoToReturn = _mapper.Map<PhotoDto>(photoEntity);
+            //return CreatedAtRoute("GetPhotoForMaincateogry", new { mainCategoryId, PhotoId = photoToReturn.Id }, photoToReturn);
+            return StatusCode(201);
         }
 
         // POST: Photo to Subcategory
         [HttpPost("subcategory/{SubcategoryId}/photos")]
-        public IActionResult CreatePhotoForSubcateogry(int mainCategoryId, int subcategoryId, [FromBody] PhotoForCreationDto photo)
+        public IActionResult CreatePhotoForSubcateogry(int mainCategoryId, int subcategoryId, [FromForm] Photo photo)
         {
             if (photo == null)
             {
@@ -170,16 +193,16 @@ namespace DVPortfolio.Controllers
                 return NotFound();
             }
 
+            photo.ProductUrl = SaveImage(photo.ImageFile);
             var photoEntity = _mapper.Map<Photo>(photo);
-
             _repository.Photo.CreatePhotoBySub(mainCategoryId, subcategoryId, photoEntity);
             _repository.Save();
 
 
-            var photoToReturn = _mapper.Map<PhotoDto>(photoEntity);
+            //var photoToReturn = _mapper.Map<PhotoDto>(photoEntity);
 
-            return CreatedAtRoute("GetPhotoForSubcategory", new { mainCategoryId, subcategoryId, PhotoId = photoToReturn.Id }, photoToReturn);
-
+            //return CreatedAtRoute("GetPhotoForSubcategory", new { mainCategoryId, subcategoryId, PhotoId = photoToReturn.Id }, photoToReturn);
+            return StatusCode(201);
         }
 
 
@@ -237,5 +260,32 @@ namespace DVPortfolio.Controllers
 
             return NoContent();
         }
+
+        [NonAction]
+        public string SaveImage(IFormFile imageFile)
+        {
+            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                //await imageFile.CopyToAsync(fileStream); 55:17
+                imageFile.CopyTo(fileStream);
+            }
+            return imageName;
+        }
+
+        [NonAction]
+        public string DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
+            return null;
+        }
+
     }
 }

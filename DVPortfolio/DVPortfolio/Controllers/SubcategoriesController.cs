@@ -99,7 +99,6 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Main Category with id: {mainCategoryId} doesn't exist in the database.");
                 return NotFound();
             }
-
             subcategory.ImageURL = SaveImage(subcategory.ImageFile);
             var subcategoryEntity = _mapper.Map<Subcategory>(subcategory);
 
