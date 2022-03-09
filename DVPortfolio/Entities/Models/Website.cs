@@ -11,9 +11,8 @@ namespace Entities
 {
     public class Website : Product
     {
-        [Required(ErrorMessage = "Employee name is a required field.")]
+        [Required(ErrorMessage = "Name is a required field.")]
         public string Name { get; set; }
-        [Required(ErrorMessage = "Thumbnail URL is a required field.")]
         public string ImageURL { get; set; }
         [NotMapped]
         public IFormFile ImageFile { get; set; }

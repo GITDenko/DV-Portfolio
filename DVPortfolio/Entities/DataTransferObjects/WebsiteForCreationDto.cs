@@ -9,6 +9,6 @@ namespace Entities.DataTransferObjects
     public class WebsiteForCreationDto : ProductDto
     {
         public string Name { get; set; }
-        public string ThumbnailURL { get; set; }
+        //public string ThumbnailURL { get; set; }
     }
 }

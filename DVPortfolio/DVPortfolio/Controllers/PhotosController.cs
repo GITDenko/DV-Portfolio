@@ -200,7 +200,6 @@ namespace DVPortfolio.Controllers
 
 
             //var photoToReturn = _mapper.Map<PhotoDto>(photoEntity);
-
             //return CreatedAtRoute("GetPhotoForSubcategory", new { mainCategoryId, subcategoryId, PhotoId = photoToReturn.Id }, photoToReturn);
             return StatusCode(201);
         }

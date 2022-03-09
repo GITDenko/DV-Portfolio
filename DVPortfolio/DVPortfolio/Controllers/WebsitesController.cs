@@ -3,9 +3,12 @@ using Contracts;
 using Entities;
 using Entities.DataTransferObjects;
 using LoggerService;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,12 +21,14 @@ namespace DVPortfolio.Controllers
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public WebsitesController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper)
+        public WebsitesController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IWebHostEnvironment hostEnvironment)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: All Websites from Main category
@@ -37,11 +42,23 @@ namespace DVPortfolio.Controllers
                 return NotFound();
             }
 
-            var websitesFromDb = _repository.Website.GetWebsitesByMain(MainCategoryId, trackChanges: false);
+            var websitesFromDb = _repository.Website.GetWebsitesByMain(MainCategoryId, trackChanges: false)
+                .Select(x => new Website()
+                {
+                    Id = x.Id,
+                    ProductUrl = x.ProductUrl,
+                    Name = x.Name,
+                    CreatedOn = x.CreatedOn,
+                    Hidden = x.Hidden,
+                    MainCategoryId = x.MainCategoryId,
+                    SubcategoryId = x.SubcategoryId,
+                    ImageURL = x.ImageURL,
+                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageURL)
+                });
 
-            var websitesDto = _mapper.Map<IEnumerable<WebsiteDto>>(websitesFromDb);
+            //var websitesDto = _mapper.Map<IEnumerable<WebsiteDto>>(websitesFromDb);
 
-            return Ok(websitesDto);
+            return Ok(websitesFromDb);
         }
 
         // GET: All Websites from Subcategory
@@ -62,11 +79,23 @@ namespace DVPortfolio.Controllers
                 return NotFound();
             }
 
-            var websitesFromDb = _repository.Website.GetWebsitesBySub(SubcategoryId, trackChanges: false);
+            var websitesFromDb = _repository.Website.GetWebsitesBySub(SubcategoryId, trackChanges: false)
+                .Select(x => new Website()
+                    {
+                        Id = x.Id,
+                        ProductUrl = x.ProductUrl,
+                        Name = x.Name,
+                        CreatedOn = x.CreatedOn,
+                        Hidden = x.Hidden,
+                        MainCategoryId = x.MainCategoryId,
+                        SubcategoryId = x.SubcategoryId,
+                        ImageURL = x.ImageURL,
+                        ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageURL)
+                    });
 
-            var websitesDto = _mapper.Map<IEnumerable<WebsiteDto>>(websitesFromDb);
+            //var websitesDto = _mapper.Map<IEnumerable<WebsiteDto>>(websitesFromDb);
 
-            return Ok(websitesDto);
+            return Ok(websitesFromDb);
 
         }
 
@@ -126,7 +155,7 @@ namespace DVPortfolio.Controllers
 
         // POST: Website to Main Category
         [HttpPost("websites")]
-        public IActionResult CreateWebsiteForMaincateogry(int mainCategoryId, [FromBody] WebsiteForCreationDto website)
+        public IActionResult CreateWebsiteForMaincateogry(int mainCategoryId, [FromForm] Website website)
         {
             if (website == null)
             {
@@ -140,22 +169,21 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Main Category with id: {mainCategoryId} doesn't exist in the database.");
                 return NotFound();
             }
-
+            website.ImageURL = SaveImage(website.ImageFile);
             var websiteEntity = _mapper.Map<Website>(website);
 
             _repository.Website.CreateWebsiteByMain(mainCategoryId, websiteEntity);
             _repository.Save();
 
 
-            var websiteToReturn = _mapper.Map<WebsiteDto>(websiteEntity);
-
-            return CreatedAtRoute("GetWebsiteForMaincateogry", new { mainCategoryId, WebsiteId = websiteToReturn.Id }, websiteToReturn);
-
+            //var websiteToReturn = _mapper.Map<WebsiteDto>(websiteEntity);
+            //return CreatedAtRoute("GetWebsiteForMaincateogry", new { mainCategoryId, WebsiteId = websiteToReturn.Id }, websiteToReturn);
+            return StatusCode(201);
         }
 
         // POST: Website to Subcategory
         [HttpPost("subcategory/{SubcategoryId}/websites")]
-        public IActionResult CreateWebsiteForSubcateogry(int mainCategoryId, int subcategoryId, [FromBody] WebsiteForCreationDto website)
+        public IActionResult CreateWebsiteForSubcateogry(int mainCategoryId, int subcategoryId, [FromForm] Website website)
         {
             if (website == null)
             {
@@ -176,16 +204,15 @@ namespace DVPortfolio.Controllers
                 _logger.LogInfo($"Subcategory with id: {subcategoryId} doesn't exist in the database.");
                 return NotFound();
             }
-
+            website.ImageURL = SaveImage(website.ImageFile);
             var websiteEntity = _mapper.Map<Website>(website);
-
             _repository.Website.CreateWebsiteBySub(mainCategoryId, subcategoryId, websiteEntity);
             _repository.Save();
 
-            var websiteToReturn = _mapper.Map<WebsiteDto>(websiteEntity);
+            //var websiteToReturn = _mapper.Map<WebsiteDto>(websiteEntity);
 
-            return CreatedAtRoute("GetWebsiteForSubcategory", new { mainCategoryId, subcategoryId, WebsiteId = websiteToReturn.Id }, websiteToReturn);
-
+            //return CreatedAtRoute("GetWebsiteForSubcategory", new { mainCategoryId, subcategoryId, WebsiteId = websiteToReturn.Id }, websiteToReturn);
+            return StatusCode(201);
         }
 
 
@@ -242,6 +269,33 @@ namespace DVPortfolio.Controllers
             _repository.Save();
 
             return NoContent();
+        }
+
+
+        [NonAction]
+        public string SaveImage(IFormFile imageFile)
+        {
+            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                //await imageFile.CopyToAsync(fileStream); 55:17
+                imageFile.CopyTo(fileStream);
+            }
+            return imageName;
+        }
+
+        [NonAction]
+        public string DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
+            return null;
         }
     }
 }
