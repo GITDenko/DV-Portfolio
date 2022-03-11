@@ -36,11 +36,11 @@ code {
   -ms-animation: fadeIn 0.5s;
 }
 
-.ProductImg {
+.Product img {
   margin: 0 auto;
   z-index: 0;
-  max-width: 420px;
-  max-height: 315px;
+  width: 420px;
+  height: 315px;
   object-fit: cover;
 }
 
