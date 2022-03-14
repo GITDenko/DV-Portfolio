@@ -12,7 +12,6 @@ const Photo = (props) => {
           return photos.map((photo, i) => (
               <div className="Product" key={i}>
                 <img className="ProductImg" src={photo.imageSrc}/>
-                <h2 className="ProductText">{photo.productUrl}</h2>
               </div>
           ))
         } catch(e){}
